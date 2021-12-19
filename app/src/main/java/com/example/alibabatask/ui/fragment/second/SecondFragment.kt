@@ -3,11 +3,15 @@ package com.example.alibabatask.ui.fragment.second
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.alibabatask.R
 import com.example.alibabatask.databinding.FragmentSecondBinding
@@ -26,7 +30,7 @@ class SecondFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding=DataBindingUtil.inflate(layoutInflater,R.layout.fragment_second,container,false)
         binding.edtDest.setText(args.destination)
@@ -52,17 +56,47 @@ class SecondFragment : Fragment() {
             ).show()
         }
 
+        binding.btnSearch.setOnClickListener {
+            back()
+        }
 
+        binding.include.btnBack.setOnClickListener {
+            back()
+        }
+
+        binding.edtFrom.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable) {
+                checkButton()
+            }
+        })
+
+
+        binding.edtDest.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable) {
+                checkButton()
+            }
+        })
     }
 
-    companion object {
-
+    fun checkButton(){
+        binding.btnSearch.isEnabled=(binding.edtDest.text.isNotEmpty()&&binding.edtFrom.text.isNotEmpty()&&binding.tvDate.text.isNotEmpty())
     }
-
-    //todo change format
     private fun updateDateFormat() {
-        val myFormat = "MM/dd/yyyy" //In which you need put here
+        val myFormat = "dd MMM yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         binding.tvDate.text = sdf.format(myCalendar.time)
+        checkButton()
+    }
+
+    private fun back(){
+        val result = Bundle().apply {
+            putString("data", binding.edtDest.text.toString())
+        }
+        requireActivity().supportFragmentManager.setFragmentResult("REQUEST_KEY", result)
+        findNavController().navigateUp()
     }
 }

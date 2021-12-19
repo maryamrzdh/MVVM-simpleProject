@@ -12,7 +12,8 @@
         tools:layout="@layout/fragment_first" >
         <action
             android:id="@+id/action_firstFragment_to_secondFragment"
-            app:destination="@id/secondFragment" />
+            app:destination="@id/secondFragment" >
+        </action>
     </fragment>
     <fragment
         android:id="@+id/secondFragment"
@@ -21,7 +22,7 @@
         tools:layout="@layout/fragment_second" >
         <argument
             android:name="destination"
-            android:defaultValue=""
+            android:defaultValue=" "
             app:argType="string"/>
     </fragment>
 </navigation>

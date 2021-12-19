@@ -15,8 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FirstViewModel @Inject constructor(private val repository: ApiRepository): ViewModel(){
-    private var _entity=MutableLiveData<MutableList<Datum>>()
-//    val entity:LiveData<MutableList<Datum>>=_entity
+
+    private val _entity: MutableLiveData<MutableList<Datum>> = MutableLiveData()
+    val entity: LiveData<MutableList<Datum>> = _entity
 
 
     fun getData(){
@@ -32,8 +33,7 @@ class FirstViewModel @Inject constructor(private val repository: ApiRepository):
             )
     }
 
-    fun getModel():MutableLiveData<MutableList<Datum>>{
-        return _entity
+    fun getModel():LiveData<MutableList<Datum>>{
+        return entity
     }
-
 }

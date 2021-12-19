@@ -15,6 +15,10 @@ import com.example.alibabatask.R
 import com.example.alibabatask.databinding.FragmentFirstBinding
 import com.example.alibabatask.model.Datum
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.fragment.app.FragmentResultListener
+
+
+
 
 @AndroidEntryPoint
 class FirstFragment : Fragment() {
@@ -30,7 +34,7 @@ class FirstFragment : Fragment() {
         // Inflate the layout for this fragment
         binding=DataBindingUtil.inflate(layoutInflater,R.layout.fragment_first,container,false)
         viewModel= ViewModelProviders.of(this).get(FirstViewModel::class.java)
-//        binding.progressBar.
+        binding.progressBar.visibility=View.VISIBLE
         viewModel.getData()
         observe()
         return binding.root
@@ -39,6 +43,13 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().supportFragmentManager.setFragmentResultListener("REQUEST_KEY",
+            viewLifecycleOwner, { requestKey: String, bundle: Bundle ->
+
+                binding.edtDestination.setText(bundle.getString("data"))
+
+
+            })
 
         binding.edtDestination.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -49,14 +60,13 @@ class FirstFragment : Fragment() {
         })
 
         binding.btnDestination.setOnClickListener {
-            val direction=FirstFragmentDirections.actionFirstFragmentToSecondFragment()
-//        direction.des
+            val direction=FirstFragmentDirections.actionFirstFragmentToSecondFragment(binding.edtDestination.text.toString())
             findNavController().navigate(direction)
+            binding.edtDestination.text.clear()
         }
-
     }
 
-    fun initAdapter(list:MutableList<Datum>){
+    private fun initAdapter(list:MutableList<Datum>){
         mAdapter= MyListAdapter(requireActivity(),list)
         binding.recyclerUser.apply {
             layoutManager = LinearLayoutManager(requireActivity())
@@ -64,8 +74,9 @@ class FirstFragment : Fragment() {
         }
     }
 
-    fun observe(){
+    private fun observe(){
         viewModel.getModel().observe(requireActivity(),{
+            binding.progressBar.visibility=View.GONE
             if (it!=null){
                 initAdapter(it)
             }
